@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Ryan Cruz Holland — Senior Full-Stack Software Engineer. C#, .NET, React, TypeScript."/>
+  <title>Ryan Cruz Holland — Senior Software Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --bg:       #040810;
+      --bg2:      #070d1a;
+      --bg3:      #0b1220;
+      --card:     #0d1628;
+      --border:   rgba(0,229,255,0.12);
+      --border2:  rgba(0,229,255,0.25);
+      --cyan:     #00e5ff;
+      --cyan2:    #00b8cc;
+      --magenta:  #ff2d9b;
+      --purple:   #7c6aff;
+      --blue:     #4f8ef7;
+      --orange:   #ff8c00;
+      --text:     #d8e8f8;
+      --muted:    #4a6480;
+      --muted2:   #7a9ab8;
+      --disp:     'Space Grotesk', sans-serif;
+      --body:     'Inter', sans-serif;
+      --mono:     'JetBrains Mono', monospace;
+    }
+
+    html { scroll-behavior:smooth; scroll-padding-top:90px; }
+    body { background:var(--bg); color:var(--text); font-family:var(--body); line-height:1.6; overflow-x:hidden; cursor:none; }
+    img { display:block; max-width:100%; }
+    a   { color:inherit; }
+
+    /* cursor */
+    .cdot,.cring { position:fixed; border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); }
+    .cdot  { width:5px; height:5px; background:var(--cyan); box-shadow:0 0 8px var(--cyan); }
+    .cring { width:32px; height:32px; border:1px solid rgba(0,229,255,0.45); z-index:9998; transition:width .28s,height .28s,border-color .28s; }
+    .cring.hov { width:48px; height:48px; border-color:rgba(0,229,255,.7); }
+
+    /* background */
+    #bg-photo {
+      position:fixed; inset:0; width:100%; height:100%;
+      object-fit:cover; object-position:center 40%;
+      z-index:0; pointer-events:none;
+      opacity:.28;
+      filter:saturate(.85) brightness(.9);
+    }
+    /* dark gradient overlay so text stays readable */
+    #bg-vignette {
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background:
+        radial-gradient(ellipse at 50% 0%,   rgba(4,8,16,.55) 0%, transparent 70%),
+        radial-gradient(ellipse at 50% 100%, rgba(4,8,16,.85) 0%, transparent 65%),
+        linear-gradient(to bottom, rgba(4,8,16,.6) 0%, rgba(4,8,16,.35) 50%, rgba(4,8,16,.8) 100%);
+    }
+
+    /* canvases */
+    #circuit-canvas, #ripple-canvas { position:fixed; inset:0; pointer-events:none; }
+    #circuit-canvas { z-index:1; }
+    #ripple-canvas  { z-index:10; mix-blend-mode:screen; opacity:.7; }
+
+    /* noise + scanline overlay */
+    .noise { position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.016;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    .scan { position:fixed;left:0;right:0;height:2px;top:0;pointer-events:none;z-index:3;
+      background:linear-gradient(90deg,transparent,rgba(0,229,255,.09),transparent);
+      animation:scanMove 10s linear infinite; }
+    @keyframes scanMove { from{top:-2px} to{top:100vh} }
+
+    /* loader */
+    #loader { position:fixed;inset:0;background:var(--bg);z-index:8000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;transition:opacity .7s,visibility .7s; }
+    #loader.gone { opacity:0;visibility:hidden;pointer-events:none; }
+    .ld-logo { font-family:var(--disp);font-size:1.5rem;font-weight:800;color:#fff;letter-spacing:.25em; }
+    .ld-logo em { font-style:normal;color:var(--cyan); }
+    .ld-track { width:200px;height:1px;background:rgba(255,255,255,.06);overflow:hidden; }
+    .ld-fill  { height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--magenta));transition:width .8s cubic-bezier(.4,0,.2,1); }
+    .ld-label { font-family:var(--mono);font-size:.68rem;color:var(--muted2);letter-spacing:.2em; }
+
+    /* nav */
+    nav { position:fixed;top:0;left:0;right:0;z-index:500;padding:22px 60px;
+      display:flex;align-items:center;justify-content:space-between;
+      transition:padding .4s,background .4s,border-color .4s;border-bottom:1px solid transparent; }
+    nav.stuck { background:rgba(4,8,16,.9);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);padding:14px 60px;border-color:var(--border); }
+    .nav-logo { font-family:var(--disp);font-weight:800;font-size:1rem;letter-spacing:-.01em;text-decoration:none;color:#fff; }
+    .nav-logo em { font-style:normal;color:var(--cyan); }
+    /* nav links hidden on desktop — holo panels handle it */
+    .nav-links { list-style:none;display:flex;gap:36px; }
+    .nav-links a { text-decoration:none;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);transition:color .2s; }
+    .nav-links a:hover,.nav-links a.act { color:var(--cyan); }
+    .nav-hire { display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;text-decoration:none;padding:8px 18px;border-radius:4px;border:1px solid var(--cyan);color:var(--cyan);transition:background .2s,color .2s; }
+    .nav-hire:hover { background:var(--cyan);color:var(--bg); }
+
+    /* burger */
+    .burger { display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;z-index:600; }
+    .burger span { display:block;width:22px;height:1.5px;background:var(--text);transition:transform .3s,opacity .3s; }
+    .burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+    .burger.open span:nth-child(2){opacity:0;}
+    .burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+    .mob-menu { display:none;position:fixed;inset:0;background:rgba(4,8,16,.97);z-index:490;flex-direction:column;align-items:center;justify-content:center;gap:36px; }
+    .mob-menu.open { display:flex; }
+    .mob-menu a { font-family:var(--disp);font-size:2.2rem;font-weight:700;text-decoration:none;color:var(--muted2);transition:color .2s; }
+    .mob-menu a:hover { color:var(--cyan); }
+
+    /* sections */
+    .sec { position:relative;z-index:2;padding:130px 60px; }
+    .sec--dark  { background:rgba(7,13,26,.95); }
+    .sec--alt   { background:rgba(11,18,32,.98); }
+    .wrap { max-width:1320px;margin:0 auto;width:100%; }
+
+    .eyebrow { display:inline-flex;align-items:center;gap:12px;font-size:.7rem;font-family:var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);margin-bottom:16px; }
+    .eyebrow::before { content:'';display:block;width:28px;height:1px;background:var(--cyan); }
+    .sec-h { font-family:var(--disp);font-size:clamp(2.2rem,4.5vw,3.6rem);font-weight:700;letter-spacing:-.03em;color:#fff;line-height:1.08;margin-bottom:18px; }
+    .sec-sub { font-size:1rem;color:var(--muted2);line-height:1.8;max-width:580px; }
+
+    /* reveal */
+    .reveal { opacity:0;transform:translateY(36px);transition:opacity .75s ease,transform .75s ease; }
+    .reveal.in { opacity:1;transform:none; }
+
+    /* hero */
+    .hero { position:relative;z-index:2;min-height:100vh;display:flex;align-items:center;padding:140px 60px 100px;overflow:hidden; }
+    .hero-grid { max-width:1320px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 520px;gap:60px;align-items:center;position:relative;z-index:1; }
+
+    /* left */
+    .avail { display:inline-flex;align-items:center;gap:8px;background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.2);border-radius:100px;padding:6px 14px 6px 10px;font-size:.7rem;font-family:var(--mono);color:var(--cyan);letter-spacing:.05em;margin-bottom:28px; }
+    .avail-dot { width:6px;height:6px;background:#22c55e;border-radius:50%;animation:ping 2.2s infinite; }
+    @keyframes ping { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.6)} 55%{box-shadow:0 0 0 7px rgba(34,197,94,0)} }
+
+    .hero-name { font-family:var(--disp);font-size:clamp(2.8rem,6vw,5.5rem);font-weight:800;letter-spacing:-.04em;line-height:1;color:#fff;margin-bottom:20px;position:relative; }
+    .hero-name::before,.hero-name::after { content:attr(data-text);position:absolute;inset:0;font-size:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit; }
+    .hero-name::before { color:var(--cyan);animation:g1 5s infinite;clip-path:polygon(0 0,100% 0,100% 40%,0 40%); }
+    .hero-name::after  { color:var(--magenta);animation:g2 5s infinite;clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%); }
+    @keyframes g1 { 0%,87%,100%{opacity:0;transform:none}88%{opacity:.9;transform:translate(-3px,-1px)}90%{opacity:.9;transform:translate(2px,1px)}92%{opacity:0} }
+    @keyframes g2 { 0%,90%,100%{opacity:0;transform:none}91%{opacity:.9;transform:translate(3px,1px)}93%{opacity:.9;transform:translate(-2px,-1px)}95%{opacity:0} }
+
+    .hero-role { font-size:clamp(1rem,1.8vw,1.25rem);color:var(--muted2);margin-bottom:26px;min-height:2em; }
+    .typed { color:var(--text); }
+    .blink { display:inline-block;width:2px;height:1.1em;background:var(--cyan);margin-left:2px;vertical-align:middle;animation:blink .75s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }
+
+    .hero-desc { font-size:.97rem;line-height:1.8;color:var(--muted2);max-width:520px;margin-bottom:40px; }
+    .hero-actions { display:flex;gap:12px;flex-wrap:wrap; }
+    .btn { display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:.85rem;border-radius:5px;padding:12px 24px;text-decoration:none;cursor:none;transition:opacity .2s,transform .2s,background .2s,color .2s;position:relative;overflow:hidden; }
+    .btn::after { content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,.14) 50%,transparent 80%);transform:translateX(-120%);transition:transform .42s; }
+    .btn:hover::after { transform:translateX(120%); }
+    .btn-cyan  { background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--bg); }
+    .btn-cyan:hover { opacity:.88;transform:translateY(-2px); }
+    .btn-ghost { border:1px solid rgba(0,229,255,.25);color:var(--text); }
+    .btn-ghost:hover { border-color:rgba(0,229,255,.5);color:var(--cyan); }
+
+    .hero-stats { display:flex;gap:44px;margin-top:56px;padding-top:44px;border-top:1px solid var(--border); }
+    .stat-val { font-family:var(--disp);font-size:2.3rem;font-weight:700;color:#fff;line-height:1; }
+    .stat-val em { font-style:normal;color:var(--cyan); }
+    .stat-lbl { font-size:.68rem;font-family:var(--mono);color:var(--muted2);letter-spacing:.08em;text-transform:uppercase;margin-top:6px; }
+
+    /* floating holo panels */
+    .holo-nav { display:grid;grid-template-columns:1fr 1fr;gap:14px;position:relative; }
+    .holo-nav .hpanel:last-child { grid-column:1/-1; }
+
+    .hpanel {
+      position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+      padding:28px 20px;border-radius:14px;text-decoration:none;cursor:none;overflow:hidden;
+      background:linear-gradient(135deg,rgba(0,229,255,.06),rgba(79,142,247,.04),rgba(124,106,255,.04));
+      border:1px solid rgba(0,229,255,.2);
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      transition:transform .3s,box-shadow .3s,border-color .3s;
+    }
+    .hpanel:nth-child(1) { animation:hfloat1 5.5s ease-in-out infinite; }
+    .hpanel:nth-child(2) { animation:hfloat2 6.2s ease-in-out infinite; }
+    .hpanel:nth-child(3) { animation:hfloat3 5s ease-in-out infinite; }
+    .hpanel:nth-child(4) { animation:hfloat4 6.8s ease-in-out infinite; }
+    .hpanel:nth-child(5) { animation:hfloat5 5.8s ease-in-out infinite; }
+
+    @keyframes hfloat1 { 0%,100%{transform:translateY(0) rotate(-.4deg)} 50%{transform:translateY(-10px) rotate(.3deg)} }
+    @keyframes hfloat2 { 0%,100%{transform:translateY(-6px) rotate(.3deg)} 50%{transform:translateY(6px) rotate(-.2deg)} }
+    @keyframes hfloat3 { 0%,100%{transform:translateY(4px) rotate(.2deg)} 50%{transform:translateY(-8px) rotate(-.3deg)} }
+    @keyframes hfloat4 { 0%,100%{transform:translateY(-4px) rotate(-.2deg)} 50%{transform:translateY(10px) rotate(.4deg)} }
+    @keyframes hfloat5 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+    .hpanel:hover {
+      transform:translateY(-6px) scale(1.03) !important;
+      border-color:rgba(0,229,255,.55);
+      box-shadow:0 0 30px rgba(0,229,255,.15),0 0 60px rgba(0,229,255,.06),inset 0 0 20px rgba(0,229,255,.04);
+      animation-play-state:paused;
+    }
+
+    /* scan line inside panel */
+    .hpanel::before { content:'';position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,255,.5),transparent);top:-100%;animation:panelScan 3s linear infinite; }
+    @keyframes panelScan { 0%{top:-2px}100%{top:102%} }
+
+    /* corner accents */
+    .hpanel::after { content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--px,50%) var(--py,50%),rgba(0,229,255,.07),transparent 60%);opacity:0;transition:opacity .3s; }
+    .hpanel:hover::after { opacity:1; }
+
+    .hp-icon { font-size:1.8rem;filter:drop-shadow(0 0 8px rgba(0,229,255,.6));z-index:1; }
+    .hp-label { font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);z-index:1; }
+    .hp-sub   { font-size:.68rem;color:var(--muted2);z-index:1; }
+
+    /* corner lines decoration */
+    .hp-corner { position:absolute;width:12px;height:12px;border-color:rgba(0,229,255,.4);border-style:solid;border-width:0; }
+    .hp-corner.tl { top:8px;left:8px;border-top-width:1px;border-left-width:1px; }
+    .hp-corner.tr { top:8px;right:8px;border-top-width:1px;border-right-width:1px; }
+    .hp-corner.bl { bottom:8px;left:8px;border-bottom-width:1px;border-left-width:1px; }
+    .hp-corner.br { bottom:8px;right:8px;border-bottom-width:1px;border-right-width:1px; }
+
+    /* about */
+    .about-grid { display:grid;grid-template-columns:400px 1fr;gap:80px;align-items:start;margin-top:64px; }
+    .about-img { position:relative; }
+    .about-img img { width:100%;aspect-ratio:4/5;object-fit:cover;object-position:top center;border-radius:16px;transition:filter .35s; }
+    .about-img:hover img { filter:brightness(1.06) saturate(1.1); }
+    .about-img::before { content:'';position:absolute;inset:0;border-radius:16px;border:1px solid rgba(0,229,255,.18);z-index:1;pointer-events:none; }
+    .about-img::after  { content:'';position:absolute;top:14px;left:14px;right:-14px;bottom:-14px;border:1px solid rgba(79,142,247,.14);border-radius:16px;z-index:0; }
+    .about-body p { font-size:.97rem;line-height:1.88;color:var(--muted2);margin-bottom:18px; }
+    .about-body p strong { color:var(--text);font-weight:500; }
+    .about-tags { display:flex;flex-wrap:wrap;gap:8px;margin-top:32px; }
+    .chip { background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.16);color:var(--muted2);font-size:.76rem;padding:5px 14px;border-radius:100px;transition:border-color .2s,color .2s,background .2s; }
+    .chip:hover { border-color:rgba(0,229,255,.4);color:var(--cyan);background:rgba(0,229,255,.07); }
+
+    /* skills */
+    .skills-header { display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:60px; }
+    .tech-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(136px,1fr));gap:10px; }
+    .tpill {
+      background:rgba(13,22,40,.9);border:1px solid rgba(0,229,255,.1);border-radius:10px;
+      padding:18px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;
+      transition:border-color .25s,transform .25s,background .25s;cursor:default;position:relative;overflow:hidden;
+    }
+    .tpill::after { content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--px,50%) var(--py,50%),rgba(0,229,255,.09),transparent 60%);opacity:0;transition:opacity .3s; }
+    .tpill:hover { border-color:rgba(0,229,255,.3);transform:translateY(-3px); }
+    .tpill:hover::after { opacity:1; }
+    .tpill-icon { font-size:1.4rem;line-height:1; }
+    .tpill-name { font-size:.75rem;color:var(--muted2);font-weight:500;line-height:1.3; }
+
+    .prof-sec   { margin-top:72px; }
+    .prof-title { font-family:var(--disp);font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:28px; }
+    .prof-grid  { display:grid;grid-template-columns:1fr 1fr;gap:20px 60px; }
+    .prof-meta  { display:flex;justify-content:space-between;margin-bottom:7px; }
+    .prof-name  { font-size:.83rem;color:var(--text); }
+    .prof-num   { font-size:.83rem;font-family:var(--mono);color:var(--cyan); }
+    .prof-track { height:2px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden; }
+    .prof-bar   { height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--blue));border-radius:2px;transition:width 1.3s cubic-bezier(.22,1,.36,1); }
+
+    /* projects */
+    .projects-wrap { position:relative;margin-top:64px; }
+
+    /* swiper */
+    .swiper-outer { position:relative; }
+    .swiper {
+      display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;
+      scrollbar-width:none;-ms-overflow-style:none;padding:10px 4px 24px;cursor:grab;
+    }
+    .swiper::-webkit-scrollbar { display:none; }
+    .swiper.dragging { cursor:grabbing;scroll-behavior:auto; }
+
+    .proj-card {
+      flex:0 0 360px;scroll-snap-align:start;border-radius:16px;overflow:hidden;
+      background:rgba(13,22,40,.95);border:1px solid rgba(0,229,255,.1);
+      display:flex;flex-direction:column;transition:border-color .3s,transform .3s,box-shadow .3s;
+      cursor:none;position:relative;
+    }
+    .proj-card:hover { border-color:rgba(0,229,255,.3);transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.4),0 0 20px rgba(0,229,255,.06); }
+
+    .proj-visual {
+      height:180px;position:relative;overflow:hidden;
+      background:linear-gradient(135deg,var(--bg3),var(--card));
+      display:flex;align-items:center;justify-content:center;
+    }
+    .proj-visual-inner { font-size:3.5rem;filter:drop-shadow(0 0 20px rgba(0,229,255,.4)); }
+
+    /* animated corner glow on card visual */
+    .proj-visual::after {
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at top right,rgba(0,229,255,.12),transparent 60%),
+                 radial-gradient(ellipse at bottom left,rgba(124,106,255,.1),transparent 60%);
+    }
+
+    /* year badge */
+    .proj-year {
+      position:absolute;top:12px;right:12px;
+      background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.25);
+      border-radius:4px;padding:3px 8px;font-size:.65rem;font-family:var(--mono);color:var(--cyan);
+    }
+
+    .proj-body { padding:22px;flex:1;display:flex;flex-direction:column;gap:10px; }
+    .proj-cat  { font-size:.65rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:.15em;color:var(--magenta); }
+    .proj-name { font-family:var(--disp);font-size:1.1rem;font-weight:600;color:#fff;line-height:1.3; }
+    .proj-desc { font-size:.83rem;color:var(--muted2);line-height:1.7;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden; }
+    .proj-tags { display:flex;flex-wrap:wrap;gap:5px;margin-top:4px; }
+    .ptag { background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.18);color:var(--blue);font-size:.65rem;font-family:var(--mono);padding:2px 8px;border-radius:3px; }
+
+    .proj-foot { display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-top:1px solid rgba(0,229,255,.08); }
+    .proj-role { font-size:.7rem;color:var(--muted2); }
+    .proj-more { font-size:.72rem;font-family:var(--mono);color:var(--cyan);text-decoration:none;display:flex;align-items:center;gap:4px; }
+
+    /* swiper controls */
+    .swiper-controls { display:flex;align-items:center;justify-content:center;gap:16px;margin-top:10px; }
+    .sw-arrow {
+      width:40px;height:40px;border-radius:50%;background:rgba(13,22,40,.9);border:1px solid rgba(0,229,255,.2);
+      color:var(--cyan);font-size:1rem;display:flex;align-items:center;justify-content:center;
+      cursor:none;transition:border-color .2s,background .2s;flex-shrink:0;
+    }
+    .sw-arrow:hover { border-color:rgba(0,229,255,.5);background:rgba(0,229,255,.08); }
+    .sw-dots { display:flex;gap:6px;align-items:center; }
+    .sw-dot { width:6px;height:6px;border-radius:50%;background:rgba(0,229,255,.2);transition:background .2s,transform .2s;cursor:none; }
+    .sw-dot.act { background:var(--cyan);transform:scale(1.4); }
+
+    /* modal */
+    .modal-overlay {
+      position:fixed;inset:0;background:rgba(4,8,16,.88);backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);z-index:2000;display:flex;align-items:center;justify-content:center;
+      padding:24px;opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s;
+    }
+    .modal-overlay.open { opacity:1;visibility:visible; }
+    .modal {
+      background:linear-gradient(135deg,rgba(11,18,32,.98),rgba(7,13,26,.98));
+      border:1px solid rgba(0,229,255,.25);border-radius:20px;width:100%;max-width:680px;
+      max-height:85vh;overflow-y:auto;position:relative;
+      transform:translateY(24px) scale(.97);transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+      scrollbar-width:thin;scrollbar-color:rgba(0,229,255,.2) transparent;
+    }
+    .modal-overlay.open .modal { transform:none; }
+    .modal::-webkit-scrollbar { width:4px; }
+    .modal::-webkit-scrollbar-thumb { background:rgba(0,229,255,.2);border-radius:4px; }
+    .modal-header { padding:32px 32px 0; }
+    .modal-close {
+      position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:50%;
+      background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);
+      color:var(--cyan);font-size:1rem;display:flex;align-items:center;justify-content:center;
+      cursor:none;transition:background .2s;
+    }
+    .modal-close:hover { background:rgba(0,229,255,.15); }
+    .modal-cat  { font-size:.68rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:.18em;color:var(--magenta);margin-bottom:10px; }
+    .modal-title { font-family:var(--disp);font-size:1.6rem;font-weight:700;color:#fff;margin-bottom:8px; }
+    .modal-role  { font-size:.82rem;color:var(--muted2); }
+    .modal-body  { padding:24px 32px 32px; }
+    .modal-section-title { font-family:var(--disp);font-size:.85rem;font-weight:600;color:var(--cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;margin-top:24px; }
+    .modal-desc { font-size:.93rem;color:var(--muted2);line-height:1.82; }
+    .modal-tags { display:flex;flex-wrap:wrap;gap:6px; }
+    .modal-tag  { background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.2);color:var(--blue);font-size:.73rem;font-family:var(--mono);padding:4px 12px;border-radius:4px; }
+    .modal-links { display:flex;gap:12px;margin-top:28px; }
+    .modal-link { display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:600;padding:10px 20px;border-radius:5px;text-decoration:none;transition:opacity .2s; }
+    .modal-link:hover { opacity:.8; }
+    .ml-primary { background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--bg); }
+    .ml-ghost   { border:1px solid rgba(0,229,255,.25);color:var(--cyan); }
+
+    /* resume card */
+    .resume-card {
+      margin-top:60px;
+      background:#f8fafc;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 0 0 1px rgba(0,229,255,.18), 0 24px 80px rgba(0,0,0,.55), 0 0 60px rgba(0,229,255,.06);
+      position:relative;
+    }
+    /* subtle cyan glow on top edge */
+    .resume-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:3px;
+      background:linear-gradient(90deg,var(--cyan),var(--blue),var(--purple));
+    }
+
+    /* top bar: name + download btn */
+    .rc-topbar {
+      background:#1b3a6b;
+      padding:28px 40px 24px;
+      display:flex; align-items:flex-start; justify-content:space-between; gap:20px;
+    }
+    .rc-name { font-family:'Space Grotesk',sans-serif; font-size:2rem; font-weight:800; color:#fff; letter-spacing:-.02em; line-height:1; }
+    .rc-tagline { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:rgba(0,229,255,.85); letter-spacing:.1em; text-transform:uppercase; margin-top:8px; }
+    .rc-download {
+      display:inline-flex; align-items:center; gap:7px; flex-shrink:0;
+      background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#07090f;
+      font-weight:700; font-size:.78rem; padding:10px 18px; border-radius:5px;
+      text-decoration:none; transition:opacity .2s; white-space:nowrap; cursor:none;
+    }
+    .rc-download:hover { opacity:.88; }
+
+    /* contact strip */
+    .rc-contact {
+      background:#0f2044;
+      padding:10px 40px;
+      display:flex; flex-wrap:wrap; gap:6px 28px; align-items:center;
+    }
+    .rc-contact a, .rc-contact span {
+      font-family:'JetBrains Mono',monospace; font-size:.72rem; color:rgba(200,220,255,.75);
+      text-decoration:none; display:flex; align-items:center; gap:6px;
+      transition:color .2s;
+    }
+    .rc-contact a:hover { color:var(--cyan); }
+    .rc-contact-dot { color:rgba(0,229,255,.3); }
+
+    /* body of the resume card */
+    .rc-body { padding:32px 40px 36px; background:#f8fafc; }
+
+    /* section divider inside resume */
+    .rs-head {
+      font-family:'Space Grotesk',sans-serif; font-size:.72rem; font-weight:700;
+      letter-spacing:.18em; text-transform:uppercase; color:#1b3a6b;
+      border-bottom:2px solid #2563eb; padding-bottom:5px; margin-bottom:14px; margin-top:24px;
+    }
+    .rs-head:first-child { margin-top:0; }
+
+    /* summary text */
+    .rs-summary { font-size:.88rem; line-height:1.75; color:#374151; }
+
+    /* job entry */
+    .rs-job { margin-bottom:18px; }
+    .rs-job:last-child { margin-bottom:0; }
+    .rs-job-header {
+      display:flex; justify-content:space-between; align-items:baseline;
+      flex-wrap:wrap; gap:4px; margin-bottom:2px;
+    }
+    .rs-role  { font-family:'Space Grotesk',sans-serif; font-size:.95rem; font-weight:700; color:#1b3a6b; }
+    .rs-dates { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:#2563eb; white-space:nowrap; }
+    .rs-company { font-size:.82rem; color:#4f8ef7; font-weight:500; margin-bottom:8px; }
+    .rs-bullets { padding-left:0; list-style:none; display:flex; flex-direction:column; gap:3px; }
+    .rs-bullets li {
+      font-size:.83rem; line-height:1.65; color:#374151;
+      padding-left:16px; position:relative;
+    }
+    .rs-bullets li::before {
+      content:'▸'; position:absolute; left:0; color:#2563eb; font-size:.75rem; top:.05em;
+    }
+
+    /* divider between jobs */
+    .rs-job-sep { border:none; border-top:1px solid #e2e8f0; margin:14px 0; }
+
+    /* education row */
+    .rs-edu-row { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:4px; }
+    .rs-edu-deg { font-family:'Space Grotesk',sans-serif; font-size:.9rem; font-weight:700; color:#1b3a6b; }
+    .rs-edu-yr  { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:#2563eb; }
+    .rs-edu-uni { font-size:.82rem; color:#4f8ef7; margin-top:2px; }
+
+    /* skills grid in resume */
+    .rs-skills-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:6px 32px; }
+    .rs-skill-row { display:flex; gap:8px; font-size:.82rem; line-height:1.5; }
+    .rs-skill-cat { font-weight:700; color:#1b3a6b; white-space:nowrap; min-width:90px; }
+    .rs-skill-val { color:#374151; }
+
+    /* contact section */
+    .c-grid { display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-top:64px; }
+    .c-aside h3 { font-family:var(--disp);font-size:1.4rem;font-weight:600;color:#fff;margin-bottom:12px; }
+    .c-aside p  { font-size:.93rem;color:var(--muted2);line-height:1.8;margin-bottom:36px; }
+    .c-links { display:flex;flex-direction:column;gap:12px; }
+    .c-row { display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--text);font-size:.85rem;transition:color .2s; }
+    .c-row:hover { color:var(--cyan); }
+    .c-icon { width:42px;height:42px;background:rgba(13,22,40,.9);border:1px solid rgba(0,229,255,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;transition:border-color .2s; }
+    .c-row:hover .c-icon { border-color:rgba(0,229,255,.35); }
+    form { display:flex;flex-direction:column;gap:14px; }
+    .frow { display:flex;gap:14px; }
+    .fg { display:flex;flex-direction:column;flex:1;gap:7px; }
+    .fg label { font-size:.68rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted2); }
+    .fg input,.fg textarea { background:rgba(13,22,40,.95);border:1px solid rgba(0,229,255,.1);color:var(--text);font-family:var(--body);font-size:.87rem;padding:11px 14px;border-radius:8px;outline:none;transition:border-color .2s; }
+    .fg input::placeholder,.fg textarea::placeholder { color:var(--muted); }
+    .fg input:focus,.fg textarea:focus { border-color:rgba(0,229,255,.38); }
+    .fg textarea { resize:vertical;min-height:120px; }
+    .f-btn { align-self:flex-start;background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--bg);border:none;font-family:var(--body);font-weight:600;font-size:.86rem;padding:12px 26px;border-radius:5px;cursor:none;transition:opacity .2s; }
+    .f-btn:hover { opacity:.88; }
+
+    /* footer */
+    footer { position:relative;z-index:2;border-top:1px solid rgba(0,229,255,.08);padding:32px 60px;display:flex;align-items:center;justify-content:space-between; }
+    .f-logo { font-family:var(--disp);font-size:.88rem;font-weight:700;color:var(--muted2); }
+    .f-logo em { font-style:normal;color:var(--cyan); }
+    .f-copy { font-size:.75rem;font-family:var(--mono);color:var(--muted); }
+    .f-links { display:flex;gap:20px; }
+    .f-links a { font-size:.75rem;font-family:var(--mono);color:var(--muted2);text-decoration:none;transition:color .2s; }
+    .f-links a:hover { color:var(--text); }
+
+    /* responsive */
+    @media (max-width:1100px) {
+      nav,nav.stuck { padding-left:40px;padding-right:40px; }
+      .hero,.sec { padding-left:40px;padding-right:40px; }
+      footer { padding-left:40px;padding-right:40px; }
+      .hero-grid { grid-template-columns:1fr; }
+      .holo-nav { grid-template-columns:repeat(3,1fr); }
+      .holo-nav .hpanel:last-child { grid-column:auto; }
+      .about-grid { grid-template-columns:1fr; }
+      .about-img  { max-width:380px; }
+      .skills-header { grid-template-columns:1fr; }
+      .prof-grid { grid-template-columns:1fr;gap:18px; }
+      .c-grid { grid-template-columns:1fr;gap:48px; }
+    }
+    @media (max-width:768px) {
+      nav,nav.stuck { padding:14px 24px; }
+      .hero,.sec { padding:80px 24px; }
+      .hero { padding-top:100px; }
+      footer { padding:24px;flex-direction:column;gap:14px;text-align:center; }
+      .nav-links,.nav-hire { display:none; }
+      .burger { display:flex; }
+      .hero-stats { gap:24px;flex-wrap:wrap; }
+      .holo-nav { grid-template-columns:1fr 1fr; }
+      .holo-nav .hpanel:last-child { grid-column:1/-1; }
+      .proj-card { flex:0 0 300px; }
+      .frow { flex-direction:column; }
+      .modal-body,.modal-header { padding-left:22px;padding-right:22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="ld-logo">RCH<em>.</em>dev</div>
+    <div class="ld-track"><div class="ld-fill" id="ld-fill"></div></div>
+    <div class="ld-label">Loading...</div>
+  </div>
+
+  <!-- BACKGROUND PHOTO + OVERLAYS -->
+  <img id="bg-photo" src="tech.jpeg" alt="" />
+  <div id="bg-vignette"></div>
+
+  <!-- AMBIENT -->
+  <div class="noise"></div>
+  <div class="scan"></div>
+  <canvas id="circuit-canvas"></canvas>
+  <canvas id="ripple-canvas"></canvas>
+
+  <!-- CURSOR -->
+  <div class="cdot" id="cdot"></div>
+  <div class="cring" id="cring"></div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal" id="modal">
+      <button class="modal-close" onclick="closeModalBtn()">✕</button>
+      <div class="modal-header">
+        <div class="modal-cat"  id="m-cat"></div>
+        <div class="modal-title" id="m-title"></div>
+        <div class="modal-role"  id="m-role"></div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section-title">Overview</div>
+        <div class="modal-desc" id="m-desc"></div>
+        <div class="modal-section-title">Tech Stack</div>
+        <div class="modal-tags" id="m-tags"></div>
+        <div class="modal-links" id="m-links"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#home" class="nav-logo">RCH<em>.</em>dev</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="nav-hire">Hire Me ↗</a>
+    <div class="burger" id="burger"><span></span><span></span><span></span></div>
+  </nav>
+
+  <div class="mob-menu" id="mm">
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#projects">Projects</a>
+    <a href="#experience">Experience</a>
+    <a href="#contact">Contact</a>
+  </div>
+
+  <!-- hero -->
+  <section class="hero" id="home">
+    <div class="hero-grid">
+      <div>
+        <div class="avail"><span class="avail-dot"></span>Open to new roles</div>
+        <h1 class="hero-name" data-text="Ryan Cruz Holland.">Ryan Cruz Holland.</h1>
+        <div class="hero-role"><span class="typed" id="typed"></span><span class="blink"></span></div>
+        <p class="hero-desc">Senior full-stack engineer. 7+ years in C# and .NET. I build platforms that scale, ship code that lasts, and lead teams that don't need babysitting. Remote. $150k+.</p>
+        <div class="hero-actions">
+          <a href="Ryan_Cruz_Holland_Resume_Leadership.docx" class="btn btn-cyan" download>Download Resume ↓</a>
+          <a href="#contact" class="btn btn-ghost">Let's Talk →</a>
+        </div>
+        <div class="hero-stats">
+          <div><div class="stat-val"><span class="cnt" data-t="7">0</span><em>+</em></div><div class="stat-lbl">Years Experience</div></div>
+          <div><div class="stat-val"><span class="cnt" data-t="30">0</span><em>%</em></div><div class="stat-lbl">Regression Reduced</div></div>
+          <div><div class="stat-val"><span class="cnt" data-t="25">0</span><em>%</em></div><div class="stat-lbl">Faster Incident Response</div></div>
+          <div><div class="stat-val"><span class="cnt" data-t="1000">0</span><em>+</em></div><div class="stat-lbl">Universities Served</div></div>
+        </div>
+      </div>
+
+      <!-- FLOATING HOLOGRAPHIC NAV PANELS -->
+      <div class="holo-nav" id="holo-nav">
+        <a href="#about" class="hpanel">
+          <div class="hp-corner tl"></div><div class="hp-corner tr"></div>
+          <div class="hp-corner bl"></div><div class="hp-corner br"></div>
+          <div class="hp-icon">👤</div>
+          <div class="hp-label">About</div>
+          <div class="hp-sub">Background & Story</div>
+        </a>
+        <a href="#skills" class="hpanel">
+          <div class="hp-corner tl"></div><div class="hp-corner tr"></div>
+          <div class="hp-corner bl"></div><div class="hp-corner br"></div>
+          <div class="hp-icon">⚡</div>
+          <div class="hp-label">Skills</div>
+          <div class="hp-sub">Tech Stack</div>
+        </a>
+        <a href="#projects" class="hpanel">
+          <div class="hp-corner tl"></div><div class="hp-corner tr"></div>
+          <div class="hp-corner bl"></div><div class="hp-corner br"></div>
+          <div class="hp-icon">🚀</div>
+          <div class="hp-label">Projects</div>
+          <div class="hp-sub">Shipped Work</div>
+        </a>
+        <a href="#experience" class="hpanel">
+          <div class="hp-corner tl"></div><div class="hp-corner tr"></div>
+          <div class="hp-corner bl"></div><div class="hp-corner br"></div>
+          <div class="hp-icon">🏗️</div>
+          <div class="hp-label">Experience</div>
+          <div class="hp-sub">Career Timeline</div>
+        </a>
+        <a href="#contact" class="hpanel">
+          <div class="hp-corner tl"></div><div class="hp-corner tr"></div>
+          <div class="hp-corner bl"></div><div class="hp-corner br"></div>
+          <div class="hp-icon">✉️</div>
+          <div class="hp-label">Contact</div>
+          <div class="hp-sub">Let's Build Together</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- about -->
+  <section class="sec sec--dark" id="about">
+    <div class="wrap">
+      <div class="eyebrow">About Me</div>
+      <h2 class="sec-h reveal">I write code the next engineer<br>won't curse at.</h2>
+      <div class="about-grid">
+        <div class="about-img reveal">
+          <img src="IMG_0078.jpg" alt="Ryan Cruz Holland"/>
+        </div>
+        <div class="about-body reveal">
+          <p>I'm a <strong>senior full-stack software engineer</strong> who's spent 7 years building platforms for higher education — the kind that run for thousands of universities and can't go down. My core stack is C#, .NET, React, and TypeScript, but I go wherever the problem lives.</p>
+          <p>I've worked at Ellucian and Blackboard — large-scale SaaS products with serious uptime expectations. I drove a 30% reduction in regressions through disciplined TDD adoption, cut incident response time by 25% with better observability patterns, and mentored junior engineers along the way.</p>
+          <p>I care about <strong>clean architecture</strong>, readable code, and teams that hold each other to a high standard. I work fully remote and have for years — async communication, ownership, no hand-holding required.</p>
+          <div class="about-tags">
+            <span class="chip">Remote First</span>
+            <span class="chip">Senior / Lead Roles</span>
+            <span class="chip">$150k+ Target</span>
+            <span class="chip">TDD Advocate</span>
+            <span class="chip">Agile / Scrum</span>
+            <span class="chip">Palm Springs, CA</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- skills -->
+  <section class="sec" id="skills">
+    <div class="wrap">
+      <div class="skills-header">
+        <div>
+          <div class="eyebrow">Tech Stack</div>
+          <h2 class="sec-h reveal">Tools I've shipped<br>real work with.</h2>
+        </div>
+        <p class="sec-sub reveal">Not from a tutorial. Seven years of production codebases, code reviews, and on-call rotations.</p>
+      </div>
+      <div class="tech-grid reveal">
+        <div class="tpill"><span class="tpill-icon">⚡</span><span class="tpill-name">C# / .NET</span></div>
+        <div class="tpill"><span class="tpill-icon">⚛️</span><span class="tpill-name">React</span></div>
+        <div class="tpill"><span class="tpill-icon">🔷</span><span class="tpill-name">TypeScript</span></div>
+        <div class="tpill"><span class="tpill-icon">🅰️</span><span class="tpill-name">AngularJS</span></div>
+        <div class="tpill"><span class="tpill-icon">🗄️</span><span class="tpill-name">SQL Server</span></div>
+        <div class="tpill"><span class="tpill-icon">☁️</span><span class="tpill-name">Azure</span></div>
+        <div class="tpill"><span class="tpill-icon">🔶</span><span class="tpill-name">AWS</span></div>
+        <div class="tpill"><span class="tpill-icon">🧪</span><span class="tpill-name">TDD</span></div>
+        <div class="tpill"><span class="tpill-icon">🏗️</span><span class="tpill-name">Architecture</span></div>
+        <div class="tpill"><span class="tpill-icon">🔗</span><span class="tpill-name">Entity Framework</span></div>
+        <div class="tpill"><span class="tpill-icon">🔄</span><span class="tpill-name">Agile / Scrum</span></div>
+        <div class="tpill"><span class="tpill-icon">👥</span><span class="tpill-name">Tech Leadership</span></div>
+      </div>
+      <div class="prof-sec">
+        <div class="prof-title">Proficiency</div>
+        <div class="prof-grid" id="prof-grid">
+          <div class="prof-row reveal"><div class="prof-meta"><span class="prof-name">C# / .NET</span><span class="prof-num">96%</span></div><div class="prof-track"><div class="prof-bar" data-w="96%"></div></div></div>
+          <div class="prof-row reveal"><div class="prof-meta"><span class="prof-name">React / TypeScript</span><span class="prof-num">92%</span></div><div class="prof-track"><div class="prof-bar" data-w="92%"></div></div></div>
+          <div class="prof-row reveal"><div class="prof-meta"><span class="prof-name">SQL Server</span><span class="prof-num">88%</span></div><div class="prof-track"><div class="prof-bar" data-w="88%"></div></div></div>
+          <div class="prof-row reveal"><div class="prof-meta"><span class="prof-name">Azure / Cloud</span><span class="prof-num">82%</span></div><div class="prof-track"><div class="prof-bar" data-w="82%"></div></div></div>
+          <div class="prof-row reveal"><div class="prof-meta"><span class="prof-name">Software Architecture</span><span class="prof-num">90%</span></div><div class="prof-track"><div class="prof-bar" data-w="90%"></div></div></div>
+          <div class="prof-row reveal"><div class="prof-meta"><span class="prof-name">TDD / Testing</span><span class="prof-num">94%</span></div><div class="prof-track"><div class="prof-bar" data-w="94%"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- projects -->
+  <section class="sec sec--alt" id="projects">
+    <div class="wrap">
+      <div class="eyebrow">Projects</div>
+      <h2 class="sec-h reveal">Things I've actually built.</h2>
+      <p class="sec-sub reveal">Click any card for full details, stack breakdown, and links.</p>
+      <div class="projects-wrap reveal">
+        <div class="swiper-outer">
+          <div class="swiper" id="swiper">
+
+            <div class="proj-card" onclick="openModal(0)">
+              <div class="proj-visual"><div class="proj-visual-inner">⚙️</div><div class="proj-year">2023</div></div>
+              <div class="proj-body">
+                <div class="proj-cat">Enterprise Platform</div>
+                <div class="proj-name">Ellucian ERP Integration Engine</div>
+                <div class="proj-desc">High-throughput API bridge connecting Ellucian Colleague to 12 third-party systems across 200+ institutions. Handles 500k+ daily transactions with sub-100ms response times.</div>
+                <div class="proj-tags"><span class="ptag">C#</span><span class="ptag">.NET 6</span><span class="ptag">SQL Server</span><span class="ptag">Azure</span></div>
+              </div>
+              <div class="proj-foot"><span class="proj-role">Lead Engineer · Ellucian</span><span class="proj-more">Details →</span></div>
+            </div>
+
+            <div class="proj-card" onclick="openModal(1)">
+              <div class="proj-visual"><div class="proj-visual-inner">📊</div><div class="proj-year">2022</div></div>
+              <div class="proj-body">
+                <div class="proj-cat">Data Platform</div>
+                <div class="proj-name">LMS Real-Time Analytics Dashboard</div>
+                <div class="proj-desc">Live analytics for Blackboard LMS serving 1,000+ universities. Real-time student engagement metrics, course completion rates, and instructor performance data via SignalR.</div>
+                <div class="proj-tags"><span class="ptag">React</span><span class="ptag">TypeScript</span><span class="ptag">SignalR</span><span class="ptag">Azure</span></div>
+              </div>
+              <div class="proj-foot"><span class="proj-role">Senior Engineer · Ellucian</span><span class="proj-more">Details →</span></div>
+            </div>
+
+            <div class="proj-card" onclick="openModal(2)">
+              <div class="proj-visual"><div class="proj-visual-inner">🧪</div><div class="proj-year">2022</div></div>
+              <div class="proj-body">
+                <div class="proj-cat">Developer Tooling</div>
+                <div class="proj-name">Modular TDD Testing Framework</div>
+                <div class="proj-desc">Open-source testing harness enabling team-wide TDD adoption across 6 squads. Includes test scaffolding, mock factories, and integration helpers. Directly responsible for 30% regression reduction.</div>
+                <div class="proj-tags"><span class="ptag">C#</span><span class="ptag">xUnit</span><span class="ptag">NUnit</span><span class="ptag">Moq</span></div>
+              </div>
+              <div class="proj-foot"><span class="proj-role">Architect & Author</span><span class="proj-more">Details →</span></div>
+            </div>
+
+            <div class="proj-card" onclick="openModal(3)">
+              <div class="proj-visual"><div class="proj-visual-inner">🔔</div><div class="proj-year">2023</div></div>
+              <div class="proj-body">
+                <div class="proj-cat">DevOps / Observability</div>
+                <div class="proj-name">Cloud Cost & Incident Monitor</div>
+                <div class="proj-desc">Azure-native monitoring tool tracking resource costs and detecting anomalies in real time. Automated alerting reduced mean incident response time by 25%. Integrated with PagerDuty, Slack, and ServiceNow.</div>
+                <div class="proj-tags"><span class="ptag">Azure SDK</span><span class="ptag">C#</span><span class="ptag">React</span><span class="ptag">Bicep</span></div>
+              </div>
+              <div class="proj-foot"><span class="proj-role">Lead Engineer · Ellucian</span><span class="proj-more">Details →</span></div>
+            </div>
+
+            <div class="proj-card" onclick="openModal(4)">
+              <div class="proj-visual"><div class="proj-visual-inner">🎓</div><div class="proj-year">2021</div></div>
+              <div class="proj-body">
+                <div class="proj-cat">Web Application</div>
+                <div class="proj-name">StudentFlow Enrollment Portal</div>
+                <div class="proj-desc">End-to-end student enrollment portal replacing a 15-year-old legacy system. Dynamic form builder, Stripe payment integration, and drag-and-drop schedule builder. Served 50k+ students at launch.</div>
+                <div class="proj-tags"><span class="ptag">React</span><span class="ptag">TypeScript</span><span class="ptag">C#</span><span class="ptag">Stripe</span></div>
+              </div>
+              <div class="proj-foot"><span class="proj-role">Senior Engineer</span><span class="proj-more">Details →</span></div>
+            </div>
+
+          </div>
+        </div>
+        <div class="swiper-controls">
+          <button class="sw-arrow" id="sw-prev">←</button>
+          <div class="sw-dots" id="sw-dots"></div>
+          <button class="sw-arrow" id="sw-next">→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- experience -->
+  <section class="sec sec--dark" id="experience">
+    <div class="wrap">
+      <div class="eyebrow">Resume</div>
+      <h2 class="sec-h reveal">The full picture.</h2>
+
+      <div class="resume-card reveal">
+
+        <!-- name + download -->
+        <div class="rc-topbar">
+          <div>
+            <div class="rc-name">Ryan Cruz Holland</div>
+            <div class="rc-tagline">Lead Full-Stack Software Engineer · Remote</div>
+          </div>
+          <a href="Ryan_Cruz_Holland_Resume_Leadership.docx" class="rc-download" download>
+            ↓ Download .docx
+          </a>
+        </div>
+
+        <!-- contact strip -->
+        <div class="rc-contact">
+          <span>📍 Palm Springs, CA</span>
+          <span class="rc-contact-dot">·</span>
+          <a href="tel:+19136206130">☎ (913) 620-6130</a>
+          <span class="rc-contact-dot">·</span>
+          <a href="mailto:ryanholland944@gmail.com">✉ ryanholland944@gmail.com</a>
+          <span class="rc-contact-dot">·</span>
+          <a href="https://www.linkedin.com/in/ryan-holland-bb63791b7" target="_blank" rel="noopener">in LinkedIn</a>
+          <span class="rc-contact-dot">·</span>
+          <a href="https://github.com/cruzzi-myth" target="_blank" rel="noopener">⌥ github.com/cruzzi-myth</a>
+        </div>
+
+        <!-- resume body -->
+        <div class="rc-body">
+
+          <!-- Summary -->
+          <div class="rs-head">Professional Summary</div>
+          <p class="rs-summary">Lead Full-Stack Software Engineer with 7+ years building large-scale SaaS platforms and leading high-performing remote engineering teams. Currently heading a 4-engineer team at Ellucian — driving architecture decisions, code quality, and delivery velocity for a platform serving 1,000+ universities, students, and employers. Proven track record mentoring engineers, eliminating regressions through rigorous TDD practices, and modernizing legacy systems without sacrificing stability.</p>
+
+          <!-- Experience -->
+          <div class="rs-head">Professional Experience</div>
+
+          <div class="rs-job">
+            <div class="rs-job-header">
+              <div class="rs-role">Lead Full-Stack Software Engineer</div>
+              <div class="rs-dates">06/2020 – Present</div>
+            </div>
+            <div class="rs-company">Ellucian &nbsp;·&nbsp; Remote</div>
+            <ul class="rs-bullets">
+              <li>Lead a remote team of 4 engineers, owning code quality, delivery velocity, and technical outcomes for a SaaS platform used by 1,000+ universities and institutions.</li>
+              <li>Drive all architecture and design decisions for backend services in C# (.NET 6/7/9), Web API, and MVC — ensuring scalability, performance, and long-term maintainability.</li>
+              <li>Mentored junior and mid-level engineers; two mentees promoted to senior roles under my guidance.</li>
+              <li>Led AngularJS → React/TypeScript migration, improving frontend performance and developer experience across a large codebase.</li>
+              <li>Enforced TDD and integration testing standards through code reviews, reducing regression rate by <strong>30%</strong> over 18 months.</li>
+              <li>Managed Azure and AWS cloud infrastructure focused on scalability, security, and reliability.</li>
+              <li>Implemented observability improvements (logging, monitoring, alerting) reducing incident response time by <strong>25%</strong>.</li>
+            </ul>
+          </div>
+
+          <hr class="rs-job-sep"/>
+
+          <div class="rs-job">
+            <div class="rs-job-header">
+              <div class="rs-role">Senior Full-Stack Software Engineer</div>
+              <div class="rs-dates">01/2017 – 05/2020</div>
+            </div>
+            <div class="rs-company">Blackboard Inc. &nbsp;·&nbsp; Remote</div>
+            <ul class="rs-bullets">
+              <li>Contributed to architecture discussions, shaping API design and database schema decisions across a large-scale education technology platform.</li>
+              <li>Built and maintained data-driven web applications using C#, Entity Framework, SQL Server, and Dapper.</li>
+              <li>Led adoption of TDD and CI practices on the team, increasing code coverage and reducing production defects.</li>
+              <li>Built and enhanced SPAs using AngularJS and React, improving frontend responsiveness and modularity.</li>
+              <li>Collaborated in agile delivery cycles, improving sprint predictability and on-time feature delivery.</li>
+            </ul>
+          </div>
+
+          <hr class="rs-job-sep"/>
+
+          <div class="rs-job">
+            <div class="rs-job-header">
+              <div class="rs-role">Software Engineer</div>
+              <div class="rs-dates">08/2014 – 12/2016</div>
+            </div>
+            <div class="rs-company">ThoughtWorks &nbsp;·&nbsp; Chicago, IL</div>
+            <ul class="rs-bullets">
+              <li>Implemented RESTful APIs and backend features using C# and .NET MVC for enterprise client engagements.</li>
+              <li>Built frontend components with AngularJS, TypeScript, HTML, and CSS.</li>
+              <li>Wrote unit and integration tests as core to the delivery workflow.</li>
+              <li>Contributed to legacy refactoring efforts, improving code maintainability and performance.</li>
+            </ul>
+          </div>
+
+          <!-- Education -->
+          <div class="rs-head">Education</div>
+          <div class="rs-edu-row">
+            <div class="rs-edu-deg">Bachelor of Science in Computer Science</div>
+            <div class="rs-edu-yr">Graduated 2014</div>
+          </div>
+          <div class="rs-edu-uni">University of Illinois at Urbana-Champaign</div>
+
+          <!-- Skills -->
+          <div class="rs-head">Technical Skills</div>
+          <div class="rs-skills-grid">
+            <div class="rs-skill-row"><span class="rs-skill-cat">Backend</span><span class="rs-skill-val">C# · .NET 9 / Core · Web API · MVC · Entity Framework · Dapper</span></div>
+            <div class="rs-skill-row"><span class="rs-skill-cat">Frontend</span><span class="rs-skill-val">React · TypeScript · AngularJS · HTML · Less/CSS</span></div>
+            <div class="rs-skill-row"><span class="rs-skill-cat">Databases</span><span class="rs-skill-val">SQL Server · T-SQL</span></div>
+            <div class="rs-skill-row"><span class="rs-skill-cat">Testing</span><span class="rs-skill-val">TDD · Unit Testing · Integration Testing · xUnit · Moq</span></div>
+            <div class="rs-skill-row"><span class="rs-skill-cat">Cloud & Infra</span><span class="rs-skill-val">Azure · AWS S3 · Cloudflare</span></div>
+            <div class="rs-skill-row"><span class="rs-skill-cat">DevOps</span><span class="rs-skill-val">GitHub · Jira · Confluence · Notion · Slack</span></div>
+            <div class="rs-skill-row"><span class="rs-skill-cat">Leadership</span><span class="rs-skill-val">Remote Team Lead · Architecture · Mentoring · Agile/Scrum</span></div>
+          </div>
+
+        </div><!-- /rc-body -->
+      </div><!-- /resume-card -->
+    </div>
+  </section>
+
+  <!-- contact -->
+  <section class="sec" id="contact">
+    <div class="wrap">
+      <div class="eyebrow">Contact</div>
+      <h2 class="sec-h reveal">Let's build something<br>worth building.</h2>
+      <div class="c-grid">
+        <div class="c-aside reveal">
+          <h3>Open to opportunities</h3>
+          <p>Looking for senior and lead full-stack roles — remote preferred. If the problem is hard and the team cares about doing it right, I'm interested.</p>
+          <div class="c-links">
+            <a href="mailto:ryanholland944@gmail.com" class="c-row"><div class="c-icon">✉</div>ryanholland944@gmail.com</a>
+            <a href="tel:+19136206130" class="c-row"><div class="c-icon">☎</div>(913) 620-6130</a>
+            <a href="https://www.linkedin.com/in/ryan-holland-bb63791b7" target="_blank" rel="noopener" class="c-row"><div class="c-icon">in</div>LinkedIn</a>
+            <a href="https://github.com/cruzzi-myth" target="_blank" rel="noopener" class="c-row"><div class="c-icon">⌥</div>github.com/cruzzi-myth</a>
+          </div>
+        </div>
+        <div class="reveal">
+          <form onsubmit="sendMsg(event)">
+            <div class="frow">
+              <div class="fg"><label>Name</label><input type="text" name="name" placeholder="Jane Smith" required/></div>
+              <div class="fg"><label>Email</label><input type="email" name="email" placeholder="jane@company.com" required/></div>
+            </div>
+            <div class="fg"><label>Subject</label><input type="text" name="subject" placeholder="Senior Engineer Role — ACME Corp"/></div>
+            <div class="fg"><label>Message</label><textarea name="message" placeholder="Tell me about the role or project..." required></textarea></div>
+            <button type="submit" class="f-btn">Send Message →</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="f-logo">RCH<em>.</em>dev</div>
+    <div class="f-copy">© 2025 Ryan Cruz Holland — Built by hand.</div>
+    <div class="f-links">
+      <a href="https://www.linkedin.com/in/ryan-holland-bb63791b7" target="_blank">LinkedIn</a>
+      <a href="https://github.com/cruzzi-myth" target="_blank">GitHub</a>
+      <a href="mailto:ryanholland944@gmail.com">Email</a>
+    </div>
+  </footer>
+
+
+  <script>
+    // project data
+    const projects = [
+      {
+        cat:'Enterprise Platform', title:'Ellucian ERP Integration Engine', role:'Lead Engineer · Ellucian · 2023',
+        desc:'Architected a high-throughput API bridge connecting Ellucian Colleague to 12 third-party systems across 200+ institutions. Handles 500k+ daily transactions with sub-100ms response times. Reduced manual data entry by 80% through automated ETL pipelines and a custom retry/idempotency layer. Designed schema migrations that ran on live prod with zero downtime.',
+        tech:['C#','.NET 6','REST APIs','SQL Server','Azure Service Bus','Entity Framework','xUnit'],
+        github:'https://github.com/cruzzi-myth', live:null
+      },
+      {
+        cat:'Data Platform', title:'LMS Real-Time Analytics Dashboard', role:'Senior Engineer · Ellucian · 2022',
+        desc:'Built a live analytics dashboard for Blackboard LMS serving 1,000+ universities. Features real-time student engagement metrics, course completion tracking, and instructor performance data. Reduced reporting lag from hours to seconds using SignalR and Azure Event Hubs. The front end was a fully custom React + TypeScript dashboard with drill-down filtering and CSV export.',
+        tech:['React','TypeScript','SignalR','Azure Event Hubs','C#','SQL Server','Application Insights'],
+        github:'https://github.com/cruzzi-myth', live:null
+      },
+      {
+        cat:'Developer Tooling', title:'Modular TDD Testing Framework', role:'Architect & Author · 2022',
+        desc:'Open-source testing harness on top of xUnit and NUnit that enabled team-wide TDD adoption across 6 engineering squads. Includes test scaffolding generators, mock factories, snapshot testing helpers, and integration test utilities for both REST APIs and database layers. Directly responsible for the 30% regression reduction reported over 12 months.',
+        tech:['C#','xUnit','NUnit','MSTest','Moq','AutoFixture','.NET'],
+        github:'https://github.com/cruzzi-myth', live:null
+      },
+      {
+        cat:'DevOps / Observability', title:'Cloud Cost & Incident Monitor', role:'Lead Engineer · Ellucian · 2023',
+        desc:'Azure-native monitoring platform that tracks resource costs, detects usage anomalies, and fires automated alerts. Automated alerting with configurable escalation policies reduced mean incident response time by 25%. Integrated with PagerDuty, Slack, and ServiceNow for full incident lifecycle management. Includes a React dashboard for cost forecasting and burn-rate visualization.',
+        tech:['Azure SDK','C#','React','TypeScript','Application Insights','Bicep','PagerDuty API'],
+        github:'https://github.com/cruzzi-myth', live:null
+      },
+      {
+        cat:'Web Application', title:'StudentFlow Enrollment Portal', role:'Senior Engineer · 2021',
+        desc:'End-to-end student enrollment and course management portal built to replace a 15-year-old legacy system. Features a dynamic form builder, Stripe payment integration, drag-and-drop schedule builder, and a real-time seat availability system. Served 50k+ students across 8 campuses at initial launch. Delivered 3 weeks ahead of the go-live deadline.',
+        tech:['React','TypeScript','C#','.NET','SQL Server','Stripe API','Redis','Docker'],
+        github:'https://github.com/cruzzi-myth', live:null
+      }
+    ];
+
+    // loader
+    const ldFill = document.getElementById('ld-fill');
+    const loader = document.getElementById('loader');
+    window.addEventListener('load', () => {
+      ldFill.style.width = '100%';
+      setTimeout(() => loader.classList.add('gone'), 950);
+    });
+
+    // custom cursor
+    const dot  = document.getElementById('cdot');
+    const ring = document.getElementById('cring');
+    let mx=0,my=0,rx=0,ry=0;
+
+    document.addEventListener('mousemove', e => {
+      mx=e.clientX; my=e.clientY;
+      dot.style.left=mx+'px'; dot.style.top=my+'px';
+      spawnRipple(mx,my);
+    });
+    (function lerpRing(){
+      rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
+      ring.style.left=rx+'px'; ring.style.top=ry+'px';
+      requestAnimationFrame(lerpRing);
+    })();
+    document.querySelectorAll('a,button,.tpill,.chip,.proj-card,.hpanel').forEach(el=>{
+      el.addEventListener('mouseenter',()=>ring.classList.add('hov'));
+      el.addEventListener('mouseleave',()=>ring.classList.remove('hov'));
+    });
+
+    // water ripple canvas
+    const rc=document.getElementById('ripple-canvas');
+    const rctx=rc.getContext('2d');
+    let rW,rH;
+    function resRC(){ rW=rc.width=window.innerWidth; rH=rc.height=window.innerHeight; }
+    resRC(); window.addEventListener('resize',resRC,{passive:true});
+
+    const ripples=[]; let lastRipple=0;
+
+    function spawnRipple(x,y){
+      const now=Date.now();
+      if(now-lastRipple<45) return;
+      lastRipple=now;
+      ripples.push({x,y,r:0,maxR:55+Math.random()*35,a:.5,born:now});
+    }
+
+    document.addEventListener('click',e=>{
+      for(let i=0;i<4;i++) ripples.push({
+        x:e.clientX+(Math.random()-.5)*18, y:e.clientY+(Math.random()-.5)*18,
+        r:0,maxR:80+Math.random()*55,a:.65,born:Date.now()
+      });
+    });
+
+    (function animRipples(){
+      rctx.clearRect(0,0,rW,rH);
+      const now=Date.now();
+      for(let i=ripples.length-1;i>=0;i--){
+        const p=ripples[i];
+        const prog=p.r/p.maxR;
+        p.r+=1.7; p.a=.5*(1-prog);
+        if(p.a<=.01){ ripples.splice(i,1); continue; }
+        rctx.beginPath(); rctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        rctx.strokeStyle=`rgba(0,229,255,${p.a})`; rctx.lineWidth=1.5*(1-prog*.65); rctx.stroke();
+        if(p.r>12){
+          rctx.beginPath(); rctx.arc(p.x,p.y,p.r*.5,0,Math.PI*2);
+          rctx.strokeStyle=`rgba(255,45,155,${p.a*.4})`; rctx.lineWidth=.7; rctx.stroke();
+        }
+      }
+      requestAnimationFrame(animRipples);
+    })();
+
+    // circuit board canvas
+    const cc=document.getElementById('circuit-canvas');
+    const cctx=cc.getContext('2d');
+    let cW,cH;
+    function resCan(){ cW=cc.width=window.innerWidth; cH=cc.height=window.innerHeight; buildCircuit(); }
+
+    // build a set of circuit traces
+    let traces=[], nodes=[];
+
+    function buildCircuit(){
+      traces=[]; nodes=[];
+      const cols=Math.ceil(cW/80)+1, rows=Math.ceil(cH/80)+1;
+      // horizontal and vertical traces on the grid
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<cols;c++){
+          if(Math.random()<.3){
+            const x=c*80, y=r*80, len=(1+Math.floor(Math.random()*4))*80;
+            traces.push({x1:x,y1:y,x2:Math.min(x+len,cW),y2:y,progress:0,speed:.004+Math.random()*.008,alpha:0,dir:1,type:'h'});
+          }
+          if(Math.random()<.3){
+            const x=c*80, y=r*80, len=(1+Math.floor(Math.random()*3))*80;
+            traces.push({x1:x,y1:y,x2:x,y2:Math.min(y+len,cH),progress:0,speed:.004+Math.random()*.008,alpha:0,dir:1,type:'v'});
+          }
+          if(Math.random()<.18) nodes.push({x:c*80,y:r*80,a:Math.random()*.4+.05,pulse:Math.random()*Math.PI*2});
+        }
+      }
+    }
+
+    resCan(); window.addEventListener('resize',resCan,{passive:true});
+
+    function animCircuit(){
+      cctx.clearRect(0,0,cW,cH);
+
+      // draw grid
+      cctx.strokeStyle='rgba(0,229,255,0.025)'; cctx.lineWidth=.5;
+      for(let x=0;x<=cW;x+=80){ cctx.beginPath();cctx.moveTo(x,0);cctx.lineTo(x,cH);cctx.stroke(); }
+      for(let y=0;y<=cH;y+=80){ cctx.beginPath();cctx.moveTo(0,y);cctx.lineTo(cW,y);cctx.stroke(); }
+
+      // animate traces — light traveling along them
+      traces.forEach(t=>{
+        t.progress+=t.speed;
+        if(t.progress>1.4){ t.progress=-.2; t.alpha=Math.random()*.35+.1; }
+        const p=Math.max(0,Math.min(1,t.progress));
+        if(p<=0||p>=1) return;
+        const px=t.type==='h'?t.x1+(t.x2-t.x1)*p:t.x1;
+        const py=t.type==='v'?t.y1+(t.y2-t.y1)*p:t.y1;
+        // glow dot
+        const g=cctx.createRadialGradient(px,py,0,px,py,14);
+        g.addColorStop(0,`rgba(0,229,255,${t.alpha})`);
+        g.addColorStop(1,'transparent');
+        cctx.fillStyle=g; cctx.beginPath(); cctx.arc(px,py,14,0,Math.PI*2); cctx.fill();
+        // faint trail
+        cctx.strokeStyle=`rgba(0,229,255,${t.alpha*.3})`; cctx.lineWidth=1;
+        cctx.beginPath();
+        if(t.type==='h'){
+          cctx.moveTo(Math.max(t.x1,px-30),py); cctx.lineTo(px,py);
+        } else {
+          cctx.moveTo(px,Math.max(t.y1,py-30)); cctx.lineTo(px,py);
+        }
+        cctx.stroke();
+      });
+
+      // nodes (pulsing dots at intersections)
+      const t2=Date.now()*.001;
+      nodes.forEach(n=>{
+        const pulse=(.5+.5*Math.sin(t2*1.2+n.pulse))*n.a;
+        cctx.beginPath(); cctx.arc(n.x,n.y,2,0,Math.PI*2);
+        cctx.fillStyle=`rgba(0,229,255,${pulse})`; cctx.fill();
+        if(pulse>.15){
+          const g2=cctx.createRadialGradient(n.x,n.y,0,n.x,n.y,8);
+          g2.addColorStop(0,`rgba(0,229,255,${pulse*.5})`); g2.addColorStop(1,'transparent');
+          cctx.fillStyle=g2; cctx.beginPath(); cctx.arc(n.x,n.y,8,0,Math.PI*2); cctx.fill();
+        }
+      });
+
+      requestAnimationFrame(animCircuit);
+    }
+    animCircuit();
+
+    // holo panel mouse glow
+    document.querySelectorAll('.hpanel').forEach(p=>{
+      p.addEventListener('mousemove',e=>{
+        const r=p.getBoundingClientRect();
+        p.style.setProperty('--px',((e.clientX-r.left)/r.width*100).toFixed(1)+'%');
+        p.style.setProperty('--py',((e.clientY-r.top)/r.height*100).toFixed(1)+'%');
+      });
+    });
+
+    // same glow effect for tech pills
+    document.querySelectorAll('.tpill').forEach(p=>{
+      p.addEventListener('mousemove',e=>{
+        const r=p.getBoundingClientRect();
+        p.style.setProperty('--px',((e.clientX-r.left)/r.width*100).toFixed(1)+'%');
+        p.style.setProperty('--py',((e.clientY-r.top)/r.height*100).toFixed(1)+'%');
+      });
+    });
+
+    // nav scroll + burger
+    const nav=document.getElementById('nav');
+    window.addEventListener('scroll',()=>nav.classList.toggle('stuck',window.scrollY>50),{passive:true});
+    const burger=document.getElementById('burger'),mm=document.getElementById('mm');
+    burger.addEventListener('click',()=>{burger.classList.toggle('open');mm.classList.toggle('open');});
+    mm.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{burger.classList.remove('open');mm.classList.remove('open');}));
+
+    // typewriter
+    const roles=['Senior Full-Stack Engineer.','C# & .NET Specialist.','React / TypeScript Dev.','Software Architect.','Remote Lead Engineer.'];
+    let ri=0,ci=0,del=false;
+    const tel=document.getElementById('typed');
+    function typeLoop(){
+      const cur=roles[ri];
+      if(!del){ tel.textContent=cur.slice(0,++ci); if(ci===cur.length){del=true;setTimeout(typeLoop,2300);return;} setTimeout(typeLoop,68); }
+      else { tel.textContent=cur.slice(0,--ci); if(ci===0){del=false;ri=(ri+1)%roles.length;} setTimeout(typeLoop,30); }
+    }
+    setTimeout(typeLoop,1100);
+
+    // scroll reveal
+    const revObs=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(!e.isIntersecting) return;
+        const siblings=[...e.target.parentElement.querySelectorAll('.reveal')];
+        e.target.style.transitionDelay=(siblings.indexOf(e.target)*.07)+'s';
+        e.target.classList.add('in'); revObs.unobserve(e.target);
+      });
+    },{threshold:.08});
+    document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
+
+    // proficiency bars
+    const profObs=new IntersectionObserver(entries=>{
+      if(!entries[0].isIntersecting) return;
+      document.querySelectorAll('.prof-bar').forEach(b=>b.style.width=b.dataset.w);
+      profObs.disconnect();
+    },{threshold:.2});
+    const pg=document.getElementById('prof-grid'); if(pg) profObs.observe(pg);
+
+    // stat counters
+    function countUp(el,target,dur=1400){
+      let s=null;
+      (function step(ts){ if(!s)s=ts; const p=Math.min((ts-s)/dur,1); el.textContent=Math.floor(p*target); if(p<1)requestAnimationFrame(step); })(performance.now());
+    }
+    const statObs=new IntersectionObserver(entries=>{
+      if(!entries[0].isIntersecting) return;
+      document.querySelectorAll('.cnt').forEach(el=>countUp(el,+el.dataset.t));
+      statObs.disconnect();
+    },{threshold:.6});
+    const sr=document.querySelector('.hero-stats'); if(sr) statObs.observe(sr);
+
+    // projects swiper
+    const swiper=document.getElementById('swiper');
+    const swDots=document.getElementById('sw-dots');
+    const cards=swiper.querySelectorAll('.proj-card');
+    const cardCount=cards.length;
+
+    // build dots
+    for(let i=0;i<cardCount;i++){
+      const d=document.createElement('div'); d.className='sw-dot'+(i===0?' act':'');
+      d.onclick=()=>scrollToCard(i); swDots.appendChild(d);
+    }
+    const dots=[...swDots.querySelectorAll('.sw-dot')];
+
+    function getCardWidth(){ return cards[0].offsetWidth+20; } // card + gap
+
+    function scrollToCard(idx){
+      const clamped=Math.max(0,Math.min(idx,cardCount-1));
+      swiper.scrollTo({left:getCardWidth()*clamped,behavior:'smooth'});
+    }
+
+    function updateDots(){
+      const idx=Math.round(swiper.scrollLeft/getCardWidth());
+      dots.forEach((d,i)=>d.classList.toggle('act',i===idx));
+    }
+
+    swiper.addEventListener('scroll',updateDots,{passive:true});
+    document.getElementById('sw-prev').addEventListener('click',()=>{ const cur=Math.round(swiper.scrollLeft/getCardWidth()); scrollToCard(cur-1); });
+    document.getElementById('sw-next').addEventListener('click',()=>{ const cur=Math.round(swiper.scrollLeft/getCardWidth()); scrollToCard(cur+1); });
+
+    // mouse drag
+    let isDragging=false,dragStartX=0,scrollStartLeft=0;
+    swiper.addEventListener('mousedown',e=>{ isDragging=true; dragStartX=e.pageX; scrollStartLeft=swiper.scrollLeft; swiper.classList.add('dragging'); e.preventDefault(); });
+    window.addEventListener('mousemove',e=>{ if(!isDragging)return; swiper.scrollLeft=scrollStartLeft-(e.pageX-dragStartX); });
+    window.addEventListener('mouseup',()=>{ if(!isDragging)return; isDragging=false; swiper.classList.remove('dragging'); updateDots(); });
+
+    // project modal
+    const overlay=document.getElementById('modal-overlay');
+
+    function openModal(idx){
+      const p=projects[idx];
+      document.getElementById('m-cat').textContent=p.cat;
+      document.getElementById('m-title').textContent=p.title;
+      document.getElementById('m-role').textContent=p.role;
+      document.getElementById('m-desc').textContent=p.desc;
+      const tags=document.getElementById('m-tags');
+      tags.innerHTML=p.tech.map(t=>`<span class="modal-tag">${t}</span>`).join('');
+      const links=document.getElementById('m-links');
+      links.innerHTML=`<a href="${p.github}" target="_blank" rel="noopener" class="modal-link ml-primary">View on GitHub ↗</a>`+(p.live?`<a href="${p.live}" target="_blank" rel="noopener" class="modal-link ml-ghost">Live Demo ↗</a>`:'');
+      overlay.classList.add('open');
+      document.body.style.overflow='hidden';
+    }
+
+    function closeModalBtn(){ overlay.classList.remove('open'); document.body.style.overflow=''; }
+    function closeModal(e){ if(e.target===overlay) closeModalBtn(); }
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModalBtn(); });
+
+    // active nav tracking
+    const secs=document.querySelectorAll('section[id]');
+    const navAs=document.querySelectorAll('.nav-links a');
+    const navObs=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{ if(!e.isIntersecting)return; navAs.forEach(a=>a.classList.remove('act')); const l=document.querySelector(`.nav-links a[href="#${e.target.id}"]`); if(l)l.classList.add('act'); });
+    },{threshold:.4});
+    secs.forEach(s=>navObs.observe(s));
+
+    // contact form
+    function sendMsg(e){
+      e.preventDefault();
+      const f=e.target;
+      const subj=f.subject.value||'Portfolio Inquiry';
+      const body=`From: ${f.name.value} (${f.email.value})\n\n${f.message.value}`;
+      window.location.href=`mailto:ryanholland944@gmail.com?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+    }
+  </script>
+
+</body>
+</html>
