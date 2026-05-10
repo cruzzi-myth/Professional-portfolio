@@ -928,33 +928,33 @@
     const projects = [
       {
         cat:'Enterprise Platform', title:'Ellucian ERP Integration Engine', role:'Lead Engineer · Ellucian · 2023',
-        desc:'Architected a high-throughput API bridge connecting Ellucian Colleague to 12 third-party systems across 200+ institutions. Handles 500k+ daily transactions with sub-100ms response times. Reduced manual data entry by 80% through automated ETL pipelines and a custom retry/idempotency layer. Designed schema migrations that ran on live prod with zero downtime.',
-        tech:['C#','.NET 6','REST APIs','SQL Server','Azure Service Bus','Entity Framework','xUnit'],
-        github:'https://github.com/cruzzi-myth', live:null
+        desc:'Enterprise multi-tenant API bridge connecting Ellucian Colleague to 12 third-party systems across 200+ university institutions. 500k+ daily transactions at sub-100ms p99. Built with transactional outbox pattern for guaranteed delivery, exponential retry ladder, multi-region disaster recovery (RPO < 15min), and full OpenTelemetry distributed tracing across all integration spans.',
+        tech:['C#','.NET 6','Azure Service Bus','AKS','SQL Server','OpenTelemetry','Terraform'],
+        github:'https://github.com/cruzzi-myth/ellucian-erp-integration-engine', live:'https://cruzzi-myth.github.io/ellucian-erp-integration-engine/portfolio-card.html'
       },
       {
         cat:'Data Platform', title:'LMS Real-Time Analytics Dashboard', role:'Senior Engineer · Ellucian · 2022',
         desc:'Built a live analytics dashboard for Blackboard LMS serving 1,000+ universities. Features real-time student engagement metrics, course completion tracking, and instructor performance data. Reduced reporting lag from hours to seconds using SignalR and Azure Event Hubs. The front end was a fully custom React + TypeScript dashboard with drill-down filtering and CSV export.',
         tech:['React','TypeScript','SignalR','Azure Event Hubs','C#','SQL Server','Application Insights'],
-        github:'https://github.com/cruzzi-myth', live:null
+        github:'https://github.com/cruzzi-myth/ellucian-erp-integration-engine', live:'https://cruzzi-myth.github.io/ellucian-erp-integration-engine/portfolio-card.html'
       },
       {
         cat:'Developer Tooling', title:'Modular TDD Testing Framework', role:'Architect & Author · 2022',
         desc:'Open-source testing harness on top of xUnit and NUnit that enabled team-wide TDD adoption across 6 engineering squads. Includes test scaffolding generators, mock factories, snapshot testing helpers, and integration test utilities for both REST APIs and database layers. Directly responsible for the 30% regression reduction reported over 12 months.',
         tech:['C#','xUnit','NUnit','MSTest','Moq','AutoFixture','.NET'],
-        github:'https://github.com/cruzzi-myth', live:null
+        github:'https://github.com/cruzzi-myth/ellucian-erp-integration-engine', live:'https://cruzzi-myth.github.io/ellucian-erp-integration-engine/portfolio-card.html'
       },
       {
         cat:'DevOps / Observability', title:'Cloud Cost & Incident Monitor', role:'Lead Engineer · Ellucian · 2023',
         desc:'Azure-native monitoring platform that tracks resource costs, detects usage anomalies, and fires automated alerts. Automated alerting with configurable escalation policies reduced mean incident response time by 25%. Integrated with PagerDuty, Slack, and ServiceNow for full incident lifecycle management. Includes a React dashboard for cost forecasting and burn-rate visualization.',
         tech:['Azure SDK','C#','React','TypeScript','Application Insights','Bicep','PagerDuty API'],
-        github:'https://github.com/cruzzi-myth', live:null
+        github:'https://github.com/cruzzi-myth/ellucian-erp-integration-engine', live:'https://cruzzi-myth.github.io/ellucian-erp-integration-engine/portfolio-card.html'
       },
       {
         cat:'Web Application', title:'StudentFlow Enrollment Portal', role:'Senior Engineer · 2021',
         desc:'End-to-end student enrollment and course management portal built to replace a 15-year-old legacy system. Features a dynamic form builder, Stripe payment integration, drag-and-drop schedule builder, and a real-time seat availability system. Served 50k+ students across 8 campuses at initial launch. Delivered 3 weeks ahead of the go-live deadline.',
         tech:['React','TypeScript','C#','.NET','SQL Server','Stripe API','Redis','Docker'],
-        github:'https://github.com/cruzzi-myth', live:null
+        github:'https://github.com/cruzzi-myth/ellucian-erp-integration-engine', live:'https://cruzzi-myth.github.io/ellucian-erp-integration-engine/portfolio-card.html'
       }
     ];
 
