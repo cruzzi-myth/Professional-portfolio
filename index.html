@@ -927,10 +927,22 @@
     // project data
     const projects = [
       {
+        cat:'AI / DevOps', title:'Ghost DevOps — Autonomous Self-Healing Infrastructure', role:'Author · Personal Project · 2026',
+        desc:'Autonomous agentic platform that detects production anomalies via Prometheus, runs a LangGraph Architect–Developer–Validator AI debate to generate a code fix, validates it through a security sandbox, and submits a GitHub PR — all without human intervention. Reduced MTTR by 85% through a closed-loop self-healing cycle. Includes a real-time React Command Center with Human-in-the-Loop approval for high-risk changes and live DORA metrics tracking.',
+        tech:['Python','LangGraph','Claude AI','C#','.NET 9','Kubernetes','React','TypeScript','Prometheus','Docker'],
+        github:'https://github.com/cruzzi-myth/ghost-devops', live:null
+      },
+      {
         cat:'Enterprise Platform', title:'Ellucian ERP Integration Engine', role:'Lead Engineer · Ellucian · 2023',
         desc:'Enterprise multi-tenant API bridge connecting Ellucian Colleague to 12 third-party systems across 200+ university institutions. 500k+ daily transactions at sub-100ms p99. Built with transactional outbox pattern for guaranteed delivery, exponential retry ladder, multi-region disaster recovery (RPO < 15min), and full OpenTelemetry distributed tracing across all integration spans.',
         tech:['C#','.NET 6','Azure Service Bus','AKS','SQL Server','OpenTelemetry','Terraform'],
         github:'https://github.com/cruzzi-myth/ellucian-erp-integration-engine', live:'https://cruzzi-myth.github.io/ellucian-erp-integration-engine/portfolio-card.html'
+      },
+      {
+        cat:'Distributed Systems', title:'High-Throughput Distributed Analytics System', role:'Author · Personal Project · 2026',
+        desc:'Real-time crypto/stock analytics platform ingesting 10k+ events/sec via Kafka with sub-50ms WebSocket delivery to a live React dashboard. Built a Redis caching layer to prevent DB exhaustion under spike load and documented full backpressure handling — queue depth monitoring, auto-scaling trigger, and dead-letter queue for failed messages. Load tested with k6 at sustained 10k msg/sec throughput.',
+        tech:['C#','.NET 9','Kafka','Redis','WebSockets','React','TypeScript','PostgreSQL','Azure','Docker','k6'],
+        github:'https://github.com/cruzzi-myth/high-throughput-analytics', live:null
       },
       {
         cat:'Data Platform', title:'LMS Real-Time Analytics Dashboard', role:'Senior Engineer · Ellucian · 2022',
