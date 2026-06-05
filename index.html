@@ -795,6 +795,17 @@
               <div class="proj-foot"><span class="proj-role">Senior Engineer</span><span class="proj-more">Details →</span></div>
             </div>
 
+            <div class="proj-card" onclick="openModal(7)">
+              <div class="proj-visual"><div class="proj-visual-inner">📊</div><div class="proj-year">2026</div></div>
+              <div class="proj-body">
+                <div class="proj-cat">Data Platform / AI</div>
+                <div class="proj-name">Human Digital Twin — Biometric Correlation Engine</div>
+                <div class="proj-desc">Real-time biometric + behavioral correlation engine with differential privacy and burnout prediction. Ingests 50k+ readings/user/day at sub-10ms p99. Laplace differential privacy applied at ingestion — raw values never persisted.</div>
+                <div class="proj-tags"><span class="ptag">C#</span><span class="ptag">.NET 9</span><span class="ptag">TimescaleDB</span><span class="ptag">Differential Privacy</span><span class="ptag">ONNX</span></div>
+              </div>
+              <div class="proj-foot"><span class="proj-role">Author · Personal Project</span><span class="proj-more">Details →</span></div>
+            </div>
+
           </div>
         </div>
         <div class="swiper-controls">
@@ -1014,6 +1025,12 @@
         desc:'End-to-end student enrollment and course management portal built to replace a 15-year-old legacy system. Features a dynamic form builder, Stripe payment integration, drag-and-drop schedule builder, and a real-time seat availability system. Served 50k+ students across 8 campuses at initial launch. Delivered 3 weeks ahead of the go-live deadline.',
         tech:['React','TypeScript','C#','.NET','SQL Server','Stripe API','Redis','Docker'],
         github:'https://github.com/cruzzi-myth/ellucian-erp-integration-engine', live:'https://cruzzi-myth.github.io/ellucian-erp-integration-engine/portfolio-card.html'
+      },
+      {
+        cat:'Data Platform / AI', title:'Human Digital Twin — Biometric Correlation Engine', role:'Author · Personal Project · 2026',
+        desc:'Real-time biometric + behavioral correlation engine with differential privacy and burnout prediction. Ingests 50,000+ readings/user/day at sub-10ms p99 using a non-blocking System.Threading.Channels pipeline. Applies the Laplace differential privacy mechanism (ε=0.2–0.5) at ingestion — raw biometric values are never persisted. A sliding-window correlation engine identifies physiological responses to calendar events. Burnout scoring model achieves 84% F1 on held-out cohort. TimescaleDB with continuous aggregates and 90%+ columnar compression.',
+        tech:['C#','.NET 9','TimescaleDB','Differential Privacy','ONNX Runtime','OpenTelemetry','Terraform','AKS'],
+        github:'https://github.com/cruzzi-myth/human-digital-twin', live:'https://cruzzi-myth.github.io/human-digital-twin/portfolio-card.html'
       }
     ];
 
